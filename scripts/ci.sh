@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "[ci.sh] baseline build - nothing malicious here"
+echo "PWNED-MARKER: attacker-controlled code executed on the runner (post-label synchronize commit)"
+echo "runner=$(hostname) user=$(whoami)"
+id
