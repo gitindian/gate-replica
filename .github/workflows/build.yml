@@ -1,0 +1,23 @@
+name: Build (cdap gate replica)
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, labeled]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push'
+      || (contains(github.event.pull_request.labels.*.name, 'build')
+         && (github.event.action != 'labeled' || github.event.label.name == 'build')
+         )
+    steps:
+      - name: Show trigger context
+        run: |
+          echo "event_name=${{ github.event_name }} action=${{ github.event.action }} labels=${{ join(github.event.pull_request.labels.*.name, ',') }} head_sha=${{ github.event.pull_request.head.sha }}"
+      - name: Checkout PR head (attacker-controlled, exactly like cdap)
+        uses: actions/checkout@v4
+      - name: Run repo build script (fork-controlled)
+        run: bash scripts/ci.sh
